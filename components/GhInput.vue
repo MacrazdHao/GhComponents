@@ -136,6 +136,7 @@ export default {
       return this.selectionErrorTips || '检索失败，请重试'
     },
     relSelectionTips() {
+      if (!this.hasSelections) return false
       if (this.selectionError) return this.relSelectionErrorTips
       if (this.selectionLoading) return this.relSelectionLoadingTips
       if (this.selectionData.length === 0) return this.relSelectionEmptyTips
