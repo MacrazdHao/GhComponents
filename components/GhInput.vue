@@ -156,14 +156,18 @@ export default {
       if (!this.hasSelections || !this.relShowSelectionBox) {
         return {
           height: 0,
-          opacity: 0
+          opacity: 0,
+          overflowY: 'hidden'
         }
+      }
+      const commonStyle = {
+        opacity: 1,
+        padding: '4px 0'
       }
       if (this.selectionData.length === 0 && this.relSelectionTips) {
         return {
-          height: '42px',
-          opacity: 1,
-          padding: '4px 0'
+          ...commonStyle,
+          height: '42px'
         }
       }
       const singleItems = document.getElementsByClassName(
@@ -176,9 +180,9 @@ export default {
       }
       // if (this.relSelectionTips) relHeight += 42
       return {
+        ...commonStyle,
         height: `${relHeight}px`,
-        opacity: 1,
-        padding: '4px 0'
+        overflowY: this.relSelectionNumOfPage > singleItems.length ? 'hidden' : 'auto'
       }
     },
 
