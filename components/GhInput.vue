@@ -57,9 +57,9 @@
             v-for="(item, index) in selectionData"
             :key="`selectionItem-${time}-${index}`"
             :class="['selectionBox-inner-item', `selectionItem-${time}`]"
-            @click="handleSelect(item)"
+            @click="handleSelect(index, item)"
           >
-            <slot name="selectionItem">
+            <slot :slot-scope="item" name="selectionItem">
               <p class="selectionBox-inner-item-text">
                 {{ item[relSelectionTextKey] }}
               </p>
@@ -130,7 +130,7 @@ export default {
       return this.selectionLoadingTips || '检索中...'
     },
     relSelectionEmptyTips() {
-      return this.selectionErrorTips || '暂无数据'
+      return this.selectionErrorTips || '暂无符合条件的结果'
     },
     relSelectionErrorTips() {
       return this.selectionErrorTips || '检索失败，请重试'
@@ -211,6 +211,9 @@ export default {
     },
     relSelectionTips() {
       this.preShowSelections()
+    },
+    value() {
+      this.$emit('selectionInitData')
     }
   },
   mounted() {
@@ -290,9 +293,12 @@ export default {
         this.$emit('selectionLoadMore')
       }
     },
-    handleSelect(item) {
-      this.$emit('input', item[this.relSelectionTextKey])
-      this.$emit('select', item)
+    handleSelect(index, item) {
+      this.preCloseSelections()
+      setTimeout(() => {
+        this.$emit('input', item[this.relSelectionTextKey])
+        this.$emit('select', index, item)
+      }, 200)
     }
   }
 }
