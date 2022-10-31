@@ -207,6 +207,13 @@ export default {
       this.preShowSelections()
     },
     selectionData() {
+      if (this.selectionData.length > 0) {
+        const item = this.selectionData[0]
+        if (item[this.relSelectionTextKey] === this.value) {
+          this.$emit('input', item[this.relSelectionTextKey])
+          this.$emit('select', 0, item)
+        }
+      }
       this.preShowSelections()
     },
     relSelectionTips() {
@@ -224,11 +231,13 @@ export default {
   methods: {
     handleFocus() {
       this.isFocus = true
+      this.$emit('focus')
     },
     handleBlur() {
       // 留出时间间隙触发选择选项的绑定事件
       setTimeout(() => {
         this.isFocus = false
+        this.$emit('blur')
       }, 100)
     },
     handleInput(e) {
