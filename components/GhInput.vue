@@ -162,12 +162,14 @@ export default {
       }
       const commonStyle = {
         opacity: 1,
-        padding: '4px 0'
+        padding: '4px 0',
+        overflowY: 'hidden'
       }
       if (this.selectionData.length === 0 && this.relSelectionTips) {
         return {
           ...commonStyle,
-          height: '42px'
+          height: '42px',
+          overflowY: 'hidden'
         }
       }
       const singleItems = document.getElementsByClassName(
