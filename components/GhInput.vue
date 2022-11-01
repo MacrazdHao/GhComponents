@@ -182,7 +182,7 @@ export default {
       return {
         ...commonStyle,
         height: `${relHeight}px`,
-        overflowY: this.relSelectionNumOfPage > singleItems.length ? 'hidden' : 'auto'
+        overflowY: this.relSelectionNumOfPage > singleItems.length && this.animToggle ? 'hidden' : 'auto'
       }
     },
 
