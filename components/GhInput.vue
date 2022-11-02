@@ -4,14 +4,16 @@
       'GhInput',
       disabled ? 'GhInput--disabled' : '',
       isFocus && !disabled ? 'GhInput--focus' : '',
+      onlySelector? 'GhInput--selector': ''
     ]"
+    @click="showSelector"
   >
     <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
     <input
       :ref="`input-${time}`"
       :placeholder="placeholder || ''"
       :disabled="!!disabled"
-      :readonly="!!readonly"
+      :readonly="!!readonly || onlySelector"
       :maxlength="maxLength"
       :type="inputType"
       :max="maxNumber"
@@ -97,6 +99,7 @@ export default {
     // 自动建议选择框参数：
     // 包含事件：selectionInitData, selectionLoadMore, select
     'hasSelections',
+    'onlySelector',
     'selectionData',
     'selectionTextKey',
     'selectionLoading',
@@ -236,6 +239,13 @@ export default {
     }
   },
   methods: {
+    showSelector() {
+      if (this.onlySelector) {
+        // 待修改，点击别处关闭
+        this.$refs[`input-${this.time}`].focus()
+        this.preShowSelections()
+      }
+    },
     handleFocus() {
       this.isFocus = true
       this.$emit('focus')
@@ -321,6 +331,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.GhInput--selector {
+  cursor: pointer;
+  input {
+    cursor: pointer;
+  }
+}
 .GhInput--disabled {
   background-color: #f5f5f5 !important;
   cursor: not-allowed !important;
