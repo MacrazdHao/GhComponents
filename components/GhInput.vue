@@ -4,8 +4,9 @@
       'GhInput',
       disabled ? 'GhInput--disabled' : '',
       isFocus && !disabled ? 'GhInput--focus' : '',
-      onlySelector? 'GhInput--selector': ''
+      onlySelector ? 'GhInput--selector' : '',
     ]"
+    v-clickoutside="closeSelector"
     @click="showSelector"
   >
     <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
@@ -45,6 +46,14 @@
     <div v-if="hasSuffix" class="suffix">
       <slot name="suffix" />
     </div>
+    <img
+      v-if="hasSelections && onlySelector"
+      :class="[
+        'selectorIcon',
+        relShowSelectionBox ? 'selectorIcon--show' : 'selectorIcon--hide',
+      ]"
+      :src="require(`../assets/icon_down${disabled ? '_selected' : ''}.svg`)"
+    >
     <!-- selections @scroll="handleScroll" -->
     <div v-if="hasSelections" class="selectionBox">
       <div
@@ -77,7 +86,9 @@
 </template>
 
 <script>
+import Clickoutside from './utilsFromElement/clickoutside'
 export default {
+  directives: { Clickoutside },
   props: [
     'value',
     'prefixIcon',
@@ -187,14 +198,19 @@ export default {
       return {
         ...commonStyle,
         height: `${relHeight}px`,
-        overflowY: this.relSelectionNumOfPage > singleItems.length && this.animToggle ? 'hidden' : 'auto'
+        overflowY:
+          this.relSelectionNumOfPage > singleItems.length && this.animToggle
+            ? 'hidden'
+            : 'auto'
       }
     },
 
     relPrefixIcon() {
       if (this.hidePrefixIcon) return false
       if (this.prefixIcon) return this.prefixIcon
-      return this.hasSelections && !this.onlySelector ? require('../assets/icon_search.svg') : false
+      return this.hasSelections && !this.onlySelector
+        ? require('../assets/icon_search.svg')
+        : false
     },
     watchPasswordIcon() {
       if (this.inputType === 'password') {
@@ -239,8 +255,13 @@ export default {
     }
   },
   methods: {
+    closeSelector() {
+      if (this.onlySelector) {
+        this.isFocus = false
+        this.preCloseSelections()
+      }
+    },
     showSelector() {
-      console.log('click')
       if (this.onlySelector) {
         this.isFocus = true
         this.preShowSelections()
@@ -459,6 +480,17 @@ export default {
   }
   .suffix {
     margin-left: 4px;
+  }
+  .selectorIcon {
+    margin-left: 8px;
+    width: 14px;
+    transition: 0.4s;
+  }
+  .selectorIcon--show {
+    transform: rotate(180deg);
+  }
+  .selectorIcon--hide {
+    transform: rotate(360deg);
   }
   .selectionBox {
     position: absolute;
