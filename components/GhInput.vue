@@ -77,7 +77,11 @@
             </slot>
           </div>
         </template>
-        <p v-if="relSelectionTips" class="selectionBox-inner-tips">
+        <p
+          v-if="relSelectionTips"
+          class="selectionBox-inner-tips"
+          :style="{ lineHeight: '34px' }"
+        >
           {{ relSelectionTips }}
         </p>
       </div>
@@ -513,7 +517,7 @@ export default {
       &-tips {
         font-size: 14px;
         color: #d3d3d3;
-        line-height: 34px;
+        // line-height: 34px;
         letter-spacing: normal;
         text-align: center;
       }
