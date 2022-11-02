@@ -1,12 +1,12 @@
 <template>
   <div
+    v-clickoutside="closeSelector"
     :class="[
       'GhInput',
       disabled ? 'GhInput--disabled' : '',
       isFocus && !disabled ? 'GhInput--focus' : '',
       onlySelector ? 'GhInput--selector' : '',
     ]"
-    v-clickoutside="closeSelector"
     @click="showSelector"
   >
     <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
