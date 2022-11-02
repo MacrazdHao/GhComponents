@@ -194,7 +194,7 @@ export default {
     relPrefixIcon() {
       if (this.hidePrefixIcon) return false
       if (this.prefixIcon) return this.prefixIcon
-      return this.hasSelections ? require('../assets/icon_search.svg') : false
+      return this.hasSelections && !this.onlySelector ? require('../assets/icon_search.svg') : false
     },
     watchPasswordIcon() {
       if (this.inputType === 'password') {
@@ -240,9 +240,9 @@ export default {
   },
   methods: {
     showSelector() {
+      console.log('click')
       if (this.onlySelector) {
-        // 待修改，点击别处关闭
-        this.$refs[`input-${this.time}`].focus()
+        this.isFocus = true
         this.preShowSelections()
       }
     },
@@ -322,6 +322,7 @@ export default {
     handleSelect(index, item) {
       this.preCloseSelections()
       setTimeout(() => {
+        if (this.onlySelector) this.isFocus = false
         this.$emit('input', item[this.relSelectionTextKey])
         this.$emit('select', index, item)
       }, 200)
