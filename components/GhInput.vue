@@ -161,7 +161,7 @@ export default {
       return false
     },
     relShowSelectionBox() {
-      if (!this.hasSelections) return false
+      if (!this.hasSelections || this.disabled || this.readonly) return false
       if (this.selectionHideWhenNoKey && !this.value) {
         return false
       }
