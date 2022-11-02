@@ -203,7 +203,7 @@ export default {
         ...commonStyle,
         height: `${relHeight}px`,
         overflowY:
-          this.relSelectionNumOfPage > singleItems.length && this.animToggle
+          this.relSelectionNumOfPage >= singleItems.length
             ? 'hidden'
             : 'auto'
       }
@@ -536,6 +536,9 @@ export default {
           line-height: 20px;
           height: 20px;
           transition: all 0.2s;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
       .selectionBox-inner-item:hover {
