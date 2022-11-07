@@ -7,7 +7,7 @@
       isFocus && !disabled ? 'GhInput--focus' : '',
       onlySelector ? 'GhInput--selector' : '',
     ]"
-    @click="showSelector"
+    @click="toggleSelector"
   >
     <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
     <input
@@ -259,6 +259,10 @@ export default {
     }
   },
   methods: {
+    toggleSelector() {
+      if (this.isFocus) this.closeSelector()
+      else if (!this.isFocus) this.showSelector()
+    },
     closeSelector() {
       if (this.onlySelector) {
         this.isFocus = false
@@ -272,8 +276,10 @@ export default {
       }
     },
     handleFocus() {
-      this.isFocus = true
-      this.$emit('focus')
+      if (!this.onlySelector) {
+        this.isFocus = true
+        this.$emit('focus')
+      }
     },
     handleBlur() {
       // 留出时间间隙触发选择选项的绑定事件
@@ -361,6 +367,7 @@ export default {
   cursor: pointer;
   input {
     cursor: pointer;
+    user-select: none;
   }
 }
 .GhInput--disabled {
