@@ -9,7 +9,7 @@
     <div
       :ref="`${refPrefix}-window-${refSuffix}`"
       :class="['dialog', `dialog--${type}`]"
-      :style="{ width: `${width}px` }"
+      :style="{ minWidth: `${width}px` }"
     >
       <div v-if="showTitle && !popover" class="dialog-title">
         <p class="dialog-title-text">{{ dialogTitle }}</p>
@@ -25,10 +25,10 @@
       </div>
       <p :class="['dialog-content', popover ? 'dialog-content--popover' : '']">
         <i
-          v-if="hideIcon !== 'hide'"
+          v-if="type !== 'hide'"
           :class="['grayManagement-iconfont', 'dialog-content-icon', iconClass]"
         />
-        <span class="dialog-content">{{ content }}</span>
+        <pre class="dialog-content">{{ content }}</pre>
       </p>
       <div
         v-if="(showCancel || showConfirm) && !popover"
@@ -188,6 +188,9 @@ export default {
     z-index: 9999;
     transition: 0.3s all ease;
     opacity: 0;
+    max-width: calc(100% - 200px);
+    width: fit-content;
+    max-height: calc(100% - 260px);
     &-title {
       width: 100%;
       display: flex;
@@ -218,6 +221,7 @@ export default {
       font-size: 14px;
       line-height: 22px;
       color: #121314;
+      overflow: auto;
       &-icon {
         font-size: 20px;
         margin-right: 6px;
