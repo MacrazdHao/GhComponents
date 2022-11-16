@@ -16,7 +16,7 @@
       :disabled="!!disabled"
       :readonly="!!readonly || onlySelector"
       :maxlength="maxLength"
-      :type="inputType"
+      :type="inputType || 'text'"
       :max="maxNumber"
       :min="minNumber"
       :value="value"
