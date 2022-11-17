@@ -15,8 +15,24 @@
       ]"
       :style="propsStyle"
     >
-      <i v-if="icon" :class="[iconStore, icon]" />
-      <p :style="propsTextStyle" v-if="!onlyIcon">{{ text }}</p>
+      <div class="loadingBox">
+        <i
+          v-if="loading"
+          class="grayManagement-iconfont icon-import loadingAnim"
+        />
+      </div>
+      <i
+        v-if="icon"
+        :class="[iconStore, icon, 'icon']"
+        :style="{ opacity: loading ? 0 : 1 }"
+      />
+      <p
+        v-if="!onlyIcon"
+        class="text"
+        :style="{ ...propsTextStyle, opacity: loading ? 0 : 1 }"
+      >
+        {{ text }}
+      </p>
     </div>
   </div>
 </template>
@@ -77,6 +93,10 @@ export default {
     onlyIcon: {
       type: Boolean,
       default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -89,8 +109,7 @@ export default {
       return style
     },
     propsTextStyle() {
-      const style = { }
-      console.log('字体颜色===>', this.normalFontColor)
+      const style = {}
       if (this.normalFontColor) style['color'] = this.normalFontColor
       return style
     }
@@ -113,10 +132,36 @@ export default {
   transition: 0.2s all;
   border-width: 1px;
   align-items: center;
+  position: relative;
+  .loadingBox {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .loadingAnim {
+      animation: rotate 0.5s linear infinite;
+      width: fit-content;
+      color: #fff;
+      transform-origin: 12px 11px;
+    }
+    @-webkit-keyframes rotate {
+      0% {
+        transform: rotate(0);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  }
   i {
     font-size: 24px;
   }
-  p {
+  .text {
     width: 100%;
     text-align: center;
     font-family: "Source Han Sans CN";
@@ -140,13 +185,13 @@ export default {
 }
 .GhButton-iconAlign-left {
   flex-direction: row;
-  i {
+  .icon {
     margin-right: 8px;
   }
 }
 .GhButton-iconAlign-right {
   flex-direction: row-reverse;
-  i {
+  .icon {
     margin-left: 8px;
   }
 }
@@ -154,8 +199,13 @@ export default {
   background-color: #3760ea;
   border-color: #3760ea;
   border-style: solid;
-  i,
-  p {
+  .text {
+    color: #fff;
+  }
+  .loadingAnim {
+    color: #fff;
+  }
+  .icon {
     color: #fff;
   }
 }
@@ -163,8 +213,13 @@ export default {
   background-color: #d13532;
   border-color: #d13532;
   border-style: solid;
-  i,
-  p {
+  .text {
+    color: #fff;
+  }
+  .loadingAnim {
+    color: #fff;
+  }
+  .icon {
     color: #fff;
   }
 }
@@ -172,10 +227,13 @@ export default {
   background-color: #ffffff00;
   border-color: #babdcc;
   border-style: solid;
-  p {
+  .text {
     color: #121314;
   }
-  i {
+  .loadingAnim {
+    color: #121314;
+  }
+  .icon {
     color: #d8dae5;
   }
 }
@@ -183,10 +241,13 @@ export default {
   background-color: #ffffff00;
   border-color: #d13532;
   border-style: solid;
-  p {
+  .text {
     color: #d13532;
   }
-  i {
+  .loadingAnim {
+    color: #d13532;
+  }
+  .icon {
     color: #d13532;
   }
 }
@@ -194,10 +255,13 @@ export default {
   background-color: #ffffff00;
   border-color: #babdcc;
   border-style: dashed;
-  p {
+  .text {
     color: #121314;
   }
-  i {
+  .loadingAnim {
+    color: #121314;
+  }
+  .icon {
     color: #d8dae5;
   }
 }
@@ -205,10 +269,13 @@ export default {
   background-color: #ffffff00;
   border-color: #d13532;
   border-style: dashed;
-  p {
+  .text {
     color: #d13532;
   }
-  i {
+  .loadingAnim {
+    color: #d13532;
+  }
+  .icon {
     color: #d13532;
   }
 }
@@ -235,20 +302,26 @@ export default {
   .GhButton-solid-blue:hover {
     background-color: #ffffff00;
     border-color: #5c87ff;
-    p {
+    .text {
       color: #5c87ff !important;
     }
-    i {
+    .loadingAnim {
+      color: #5c87ff !important;
+    }
+    .icon {
       color: #5c87ff !important;
     }
   }
   .GhButton-solid-blue:active {
     background-color: #f0f6ff;
     border-color: #284ac1;
-    p {
+    .text {
       color: #5c87ff !important;
     }
-    i {
+    .loadingAnim {
+      color: #5c87ff !important;
+    }
+    .icon {
       color: #284ac1 !important;
     }
   }
@@ -256,20 +329,26 @@ export default {
   .GhButton-solid-red:hover {
     background-color: #ffffff00;
     border-color: #fa8075;
-    p {
+    .text {
       color: #fa8075 !important;
     }
-    i {
+    .loadingAnim {
+      color: #fa8075 !important;
+    }
+    .icon {
       color: #fa8075 !important;
     }
   }
   .GhButton-solid-red:active {
     background-color: #fff3f1;
     border-color: #a92228;
-    p {
+    .text {
       color: #a92228 !important;
     }
-    i {
+    .loadingAnim {
+      color: #a92228 !important;
+    }
+    .icon {
       color: #a92228 !important;
     }
   }
@@ -277,20 +356,26 @@ export default {
   .GhButton-dashed-blue:hover {
     background-color: #ffffff00;
     border-color: #5c87ff;
-    p {
+    .text {
       color: #5c87ff !important;
     }
-    i {
+    .loadingAnim {
+      color: #5c87ff !important;
+    }
+    .icon {
       color: #5c87ff !important;
     }
   }
   .GhButton-dashed-blue:active {
     background-color: #f0f6ff;
     border-color: #284ac1;
-    p {
+    .text {
       color: #284ac1 !important;
     }
-    i {
+    .loadingAnim {
+      color: #284ac1 !important;
+    }
+    .icon {
       color: #284ac1 !important;
     }
   }
@@ -298,20 +383,26 @@ export default {
   .GhButton-dashed-red:hover {
     background-color: #ffffff00;
     border-color: #fa8075;
-    p {
+    .text {
       color: #fa8075 !important;
     }
-    i {
+    .loadingAnim {
+      color: #fa8075 !important;
+    }
+    .icon {
       color: #fa8075 !important;
     }
   }
   .GhButton-dashed-red:active {
     background-color: #fff3f1;
     border-color: #a92228;
-    p {
+    .text {
       color: #a92228 !important;
     }
-    i {
+    .loadingAnim {
+      color: #a92228 !important;
+    }
+    .icon {
       color: #a92228 !important;
     }
   }
@@ -330,38 +421,50 @@ export default {
   }
   .GhButton-solid-blue {
     border-color: #babdcc;
-    p {
+    .text {
+      color: #babdcc;
+    }
+    .loadingAnim {
       color: #babdcc;
     }
   }
   .GhButton-solid-red {
     border-color: #ffe5e1;
-    p {
+    .text {
       color: #ffe5e1;
     }
-    i {
+    .loadingAnim {
+      color: #ffe5e1;
+    }
+    .icon {
       color: #ffe5e1;
     }
   }
   .GhButton-dashed-blue {
     border-color: #babdcc;
-    p {
+    .text {
+      color: #babdcc;
+    }
+    .loadingAnim {
       color: #babdcc;
     }
   }
   .GhButton-dashed-red {
     border-color: #ffe5e1;
-    p {
+    .text {
       color: #ffe5e1;
     }
-    i {
+    .loadingAnim {
+      color: #ffe5e1;
+    }
+    .icon {
       color: #ffe5e1;
     }
   }
 }
 .GhButton-onlyIcon {
   .GhButton {
-    i {
+    .icon {
       margin-left: 0;
       margin-right: 0;
     }
