@@ -116,7 +116,7 @@ export default {
               this.closeAlert(index)
             }, option.duration)
           )
-        })
+        }, 10)
       })
     }
   }
