@@ -250,7 +250,7 @@ export default {
       this.preShowSelections()
     },
     value() {
-      this.$emit('selectionInitData')
+      // this.$emit('selectionInitData')
     }
   },
   mounted() {
