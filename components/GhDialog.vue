@@ -30,7 +30,7 @@
         />
         <slot name="content">
           <pre class="dialog-content">
-          {{ content }}
+            {{ content }}
           </pre>
         </slot>
       </p>
