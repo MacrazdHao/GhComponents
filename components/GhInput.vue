@@ -204,8 +204,8 @@ export default {
       default: false
     },
     selectionData: {
-      type: Object,
-      default: null
+      type: Array,
+      default: () => []
     },
     selectionTextKey: {
       type: String,
