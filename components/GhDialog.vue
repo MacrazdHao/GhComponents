@@ -200,23 +200,25 @@ export default {
   },
   watch: {
     show() {
-      this.initShow()
-    }
-  },
-  mounted() {
-    this.initShow()
-  },
-  methods: {
-    initShow() {
       if (this.show) {
         this.showBuffer = true
         setTimeout(() => {
           this.showMessage()
-        })
+        }, 10)
       } else {
         this.closeWindow()
       }
-    },
+    }
+  },
+  mounted() {
+    if (this.show) {
+      this.showBuffer = true
+      setTimeout(() => {
+        this.showMessage()
+      }, 10)
+    }
+  },
+  methods: {
     shadeHandler() {
       if (this.enableShadeClose) this.cancelHandler()
     },
