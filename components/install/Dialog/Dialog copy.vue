@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showBuffer" class="GhDialog">
+  <div class="Dialog">
     <div
       v-show="showShade && !popover"
       :ref="`${refPrefix}-shade-${refSuffix}`"
@@ -28,11 +28,7 @@
           v-if="type !== 'hide'"
           :class="['grayManagement-iconfont', 'dialog-content-icon', iconClass]"
         />
-        <slot name="content">
-          <pre class="dialog-content">
-            {{ content }}
-          </pre>
-        </slot>
+        <pre class="dialog-content">{{ content }}</pre>
       </p>
       <div
         v-if="(showCancel || showConfirm) && !popover"
@@ -43,14 +39,14 @@
           class="dialog-buttons-item dialog-buttons-cancel"
           @click="cancelHandler"
         >
-          {{ relCancelText }}
+          {{ cancelText }}
         </div>
         <div
           v-if="showConfirm"
           class="dialog-buttons-item dialog-buttons-confirm"
           @click="confirmHandler"
         >
-          {{ relConfirmText }}
+          {{ confirmText }}
         </div>
       </div>
     </div>
@@ -58,106 +54,30 @@
 </template>
 
 <script>
-/**
- * GhDialog参数解析
- * @param show 显示弹窗
- * @param width[Number] 最小宽度，单位px
- * @param title[String] 标题
- * @param showTitle[Boolean] 是否展示标题
- * @param content[String] 内容
- * @param type[String] 窗体类型，可选项：normal/info/success/warn/fail/hide(隐藏)
- * @param cancelText[String] 取消按钮文案
- * @param confirmText[String] 确认按钮文案
- * @param showCancel[Boolean] 是否显示取消按钮
- * @param showConfirm[Boolean] 是否显示确认按钮
- * @param showClose[Boolean] 是否显示关闭Icon按钮
- * @param showShade[Boolean] 是否显示阴影遮罩
- * @param enableShadeClose[Boolean] 是否展示阴影遮罩点击关闭效果
- * @param popover[Boolean] 是否为纯文字提示窗
- * @param popDuration[Number] 纯文字提示窗展示时间
- * @param groupName[String] 同组只展示限制的弹窗个数，与groupMax共用，如果为空则不限制
- * @param groupMax[Number] 同组展示的弹窗个数上限
- * @param hide[Function] 窗体关闭回调函数
- * @param confirm[Function] 确认按钮回调函数
- * @param cancel[Function] 取消按钮回调函数
- */
 export default {
-  props: {
-    show: {
-      type: Boolean,
-      default: false
-    },
-    width: {
-      type: Number,
-      default: 360
-    },
-    title: {
-      type: String,
-      default: ''
-    },
-    showTitle: {
-      type: Boolean,
-      default: true
-    },
-    content: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: String,
-      default: 'normal'
-    },
-    cancelText: {
-      type: String,
-      default: ''
-    },
-    confirmText: {
-      type: String,
-      default: ''
-    },
-    showCancel: {
-      type: Boolean,
-      default: false
-    },
-    showConfirm: {
-      type: Boolean,
-      default: true
-    },
-    showClose: {
-      type: Boolean,
-      default: true
-    },
-    showShade: {
-      type: Boolean,
-      default: true
-    },
-    enableShadeClose: {
-      type: Boolean,
-      default: false
-    },
-    popover: {
-      type: Boolean,
-      default: false
-    },
-    popDuration: {
-      type: Number,
-      default: 2000
-    }
-  },
   data() {
     return {
-      showBuffer: false
+      width: 360,
+      title: '',
+      showTitle: true,
+      content: '',
+      type: 'normal',
+      cancelText: this.$t('knctr.cancelBtn'),
+      confirmText: this.$t('knctr.confirmBtn'),
+      showCancel: false,
+      showConfirm: true,
+      showClose: true,
+      showShade: true,
+      enableShadeClose: false,
+      popover: false,
+      popDuration: 2000,
+      callback: () => {},
+      cancelCallback: () => {}
     }
   },
   computed: {
-    relCancelText() {
-      return this.cancelText || this.$t('gray.cancelBtn')
-    },
-    relConfirmText() {
-      return this.confirmText || this.$t('gray.confirmBtn')
-    },
     refPrefix() {
-      return 'GhDialog-'
+      return 'Dialog-'
     },
     refSuffix() {
       return new Date().getTime() + Math.random() * 1000
@@ -167,17 +87,17 @@ export default {
       else {
         switch (this.type) {
           case 'normal':
-            return this.$t('gray.dialog_normal')
+            return this.$t('knctr.dialog_normal')
           case 'info':
-            return this.$t('gray.dialog_info')
+            return this.$t('knctr.dialog_info')
           case 'success':
-            return this.$t('gray.dialog_success')
+            return this.$t('knctr.dialog_success')
           case 'warn':
-            return this.$t('gray.dialog_warn')
+            return this.$t('knctr.dialog_warn')
           case 'fail':
-            return this.$t('gray.dialog_fail')
+            return this.$t('knctr.dialog_fail')
           default:
-            return this.$t('gray.dialog_default')
+            return this.$t('knctr.dialog_default')
         }
       }
     },
@@ -196,29 +116,14 @@ export default {
       }
     }
   },
-  watch: {
-    show() {
-      this.initShow()
-    }
-  },
-  mounted() {
-    this.initShow()
-  },
   methods: {
-    initShow() {
-      if (this.show) {
-        this.showBuffer = true
-        setTimeout(() => {
-          this.showMessage()
-        })
-      } else {
-        this.closeWindow()
-      }
-    },
     shadeHandler() {
       if (this.enableShadeClose) this.cancelHandler()
     },
     showMessage(options) {
+      for (const key in options) {
+        this[key] = options[key]
+      }
       const dShade = this.$refs[`${this.refPrefix}-shade-${this.refSuffix}`]
       const dWindow = this.$refs[`${this.refPrefix}-window-${this.refSuffix}`]
       setTimeout(() => {
@@ -232,35 +137,28 @@ export default {
         }
       }, 100)
     },
-    closeWindow() {
+    closeWindow(cb) {
       const dShade = this.$refs[`${this.refPrefix}-shade-${this.refSuffix}`]
       const dWindow = this.$refs[`${this.refPrefix}-window-${this.refSuffix}`]
       dWindow.style.opacity = 0
       dWindow.style.transform = 'translate(-50%, -70%)'
       setTimeout(() => {
         dShade.style.opacity = 0
-        setTimeout(() => {
-          this.$emit('hide')
-        }, 100)
+        setTimeout(cb, 100)
       }, 100)
-      setTimeout(() => {
-        this.showBuffer = false
-      }, 300)
     },
     confirmHandler() {
-      this.$emit('confirm')
-      this.closeWindow()
+      this.closeWindow(this.callback())
     },
     cancelHandler() {
-      this.$emit('cancel')
-      this.closeWindow()
+      this.closeWindow(this.cancelCallback())
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.GhDialog {
+.Dialog {
   .dialogShade {
     position: fixed;
     top: 0;
