@@ -28,9 +28,11 @@
           v-if="type !== 'hide'"
           :class="['grayManagement-iconfont', 'dialog-content-icon', iconClass]"
         />
-        <pre class="dialog-content">
-          <slot name="content">{{ content }}</slot>
-        </pre>
+        <slot name="content">
+          <pre class="dialog-content">
+          {{ content }}
+          </pre>
+        </slot>
       </p>
       <div
         v-if="(showCancel || showConfirm) && !popover"
