@@ -12,7 +12,9 @@
       :style="{ minWidth: `${width}px` }"
     >
       <div v-if="showTitle && !popover" class="dialog-title">
-        <p class="dialog-title-text">{{ dialogTitle }}</p>
+        <slot name="title">
+          <p class="dialog-title-text">{{ dialogTitle }}</p>
+        </slot>
         <i
           v-if="showClose"
           class="
