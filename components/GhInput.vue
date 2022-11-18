@@ -92,7 +92,7 @@
 <script>
 /**
  * GhInput参数解析
- * @param value[String] 输入框value
+ * @param value[String|Number|Null] 输入框value
  * @param prefixIcon[String(ImageModule)] 左侧Icon，为require的图片资源
  * @param hidePrefixIcon[Boolean] 是否隐藏前置(输入框左侧)Icon
  * @param placeholder[String] 输入框提示语(placeholder)
@@ -126,7 +126,7 @@ export default {
   directives: { Clickoutside },
   props: {
     value: {
-      type: String,
+      type: [String, Number, null],
       default: ''
     },
     prefixIcon: {
