@@ -38,6 +38,22 @@
 </template>
 
 <script>
+/**
+ * GhButton参数解析
+ * @param text[String] 按钮文字
+ * @param minWidth[Number] 按钮最小长度
+ * @param normalFontColor[String] 常态字体颜色
+ * @param cusStyle[Object(StyleSheet)] 自定义按钮样式
+ * @param disabled[Boolean] 是否禁用按钮
+ * @param size[String] 按钮预设尺寸，可选：medium/small/mini
+ * @param theme[String] 按钮预设主题，可选：fill/solid/dashed
+ * @param color[String] 按钮预设颜色，可选：blue/red
+ * @param iconStore[String] Icon所在iconfont库的css类名
+ * @param icon[String] Icon于iconfont库中的css类名
+ * @param iconAlign[String] Icon的位置，可选：left/right
+ * @param onlyIcon[Boolean] 是否仅显示Icon（隐藏文字）
+ * @param loading[Boolean] 加载状态（为true时隐藏原按钮内容，变为加载Icon）
+ */
 export default {
   props: {
     text: {

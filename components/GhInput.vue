@@ -9,7 +9,7 @@
     ]"
     @click="toggleSelector"
   >
-    <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
+    <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon" />
     <input
       :ref="`input-${time}`"
       :placeholder="placeholder || ''"
@@ -24,7 +24,7 @@
       @blur="handleBlur"
       @input="handleInput"
       @keydown="handleEnter"
-    >
+    />
     <p v-if="showLength && maxLength" class="length">
       {{ value.length }}/{{ maxLength }}
     </p>
@@ -33,13 +33,13 @@
       class="copyButton rightButton"
       src="../assets/icon_copy.svg"
       @click="copyValue"
-    >
+    />
     <img
       v-if="watchPassword && type === 'password'"
       class="watchButton rightButton"
       :src="watchPasswordIcon"
       @click="togglePassword"
-    >
+    />
     <div v-if="showClear" class="clearButton" @click="clearValue">
       <span> × </span>
     </div>
@@ -53,7 +53,7 @@
         relShowSelectionBox ? 'selectorIcon--show' : 'selectorIcon--hide',
       ]"
       :src="require(`../assets/icon_down${disabled ? '_selected' : ''}.svg`)"
-    >
+    />
     <!-- selections @scroll="handleScroll" -->
     <div v-if="hasSelections" class="selectionBox">
       <div
@@ -90,41 +90,156 @@
 </template>
 
 <script>
+/**
+ * GhInput参数解析
+ * @param value[String] 输入框value
+ * @param prefixIcon[String(ImageModule)] 左侧Icon，为require的图片资源
+ * @param hidePrefixIcon[Boolean] 是否隐藏前置(输入框左侧)Icon
+ * @param placeholder[String] 输入框提示语(placeholder)
+ * @param disabled[Boolean] 是否禁用输入框
+ * @param readonly[Boolean] 是否只读输入框
+ * @param maxLength[Number] 最大内容长度
+ * @param showLength[Number] 是否显示内容长度
+ * @param type[String] 输入框类型(原生input属性)
+ * @param watchPassword[Boolean] 是否开启密码显示按钮
+ * @param maxNumber[Number] 最大数值(仅type=number时起效)
+ * @param minNumber[Number] 最小数值(仅type=number时起效)
+ * @param canCopy[Boolean] 是否开启内容复制按钮
+ * @param copyTips[Boolean] 复制成功提示
+ * @param copyErrTips[String] 复制失败提示
+ * @param showClear[Boolean] 是否显示清空内容按钮
+ * @param hasSuffix[Boolean] 是否拥有后置(输入框右侧)内容
+ * @param hasSelections[Boolean] 是否拥有可选项
+ * @param onlySelector[Boolean] 是否仅启动选择功能（该属性为true时会禁用输入功能）
+ * @param selectionData[Array({[TextKey||text]: String, ...}]) 选项数据
+ * @param selectionTextKey[String] 选项数据中单项的所需展示的文案内容对应Key值
+ * @param selectionLoading[Boolean] 选项数据是否正在加载
+ * @param selectionError[Boolean] 选项数据是否发生加载错误
+ * @param selectionLoadingTips[String] 选项数据加载提示语
+ * @param selectionErrorTips[String] 选项数据加载错误提示语
+ * @param selectionEmptyTips[String] 选项数据为空提示语
+ * @param selectionHideWhenNoKey[Boolean] 是否在value为空时隐藏选择框(onlySelector=true时不生效)
+ * @param selectionNumOfPage[Number] 选项数据列表的第一页展示选项数
+ */
 import Clickoutside from './utilsFromElement/clickoutside'
 export default {
   directives: { Clickoutside },
-  props: [
-    'value',
-    'prefixIcon',
-    'hidePrefixIcon',
-    'placeholder',
-    'disabled',
-    'readonly',
-    'maxLength',
-    'type',
-    'watchPassword',
-    'maxNumber',
-    'minNumber',
-    'canCopy',
-    'copyTips',
-    'copyErrTips',
-    'showLength',
-    'showClear',
-    'hasSuffix',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    },
+    prefixIcon: {
+      type: String,
+      default: null
+    },
+    hidePrefixIcon: {
+      type: Boolean,
+      default: false
+    },
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    maxLength: {
+      type: Number,
+      default: Infinity
+    },
+    type: {
+      type: String,
+      default: 'text'
+    },
+    watchPassword: {
+      type: Boolean,
+      default: false
+    },
+    maxNumber: {
+      type: Number,
+      default: 0
+    },
+    minNumber: {
+      type: Number,
+      default: 0
+    },
+    canCopy: {
+      type: Boolean,
+      default: false
+    },
+    copyTips: {
+      type: String,
+      default: ''
+    },
+    copyErrTips: {
+      type: String,
+      default: ''
+    },
+    showLength: {
+      type: Boolean,
+      default: false
+    },
+    showClear: {
+      type: Boolean,
+      default: false
+    },
+    hasSuffix: {
+      type: Boolean,
+      default: false
+    },
     // 自动建议选择框参数：
     // 包含事件：selectionInitData, selectionLoadMore, select
-    'hasSelections',
-    'onlySelector',
-    'selectionData',
-    'selectionTextKey',
-    'selectionLoading',
-    'selectionError',
-    'selectionLoadingTips',
-    'selectionErrorTips',
-    'selectionEmptyTips',
-    'selectionHideWhenNoKey',
-    'selectionNumOfPage'
-  ],
+    hasSelections: {
+      type: Boolean,
+      default: false
+    },
+    onlySelector: {
+      type: Boolean,
+      default: false
+    },
+    selectionData: {
+      type: Object,
+      default: null
+    },
+    selectionTextKey: {
+      type: String,
+      default: ''
+    },
+    selectionLoading: {
+      type: Boolean,
+      default: false
+    },
+    selectionError: {
+      type: Boolean,
+      default: false
+    },
+    selectionLoadingTips: {
+      type: String,
+      default: ''
+    },
+    selectionErrorTips: {
+      type: String,
+      default: ''
+    },
+    selectionEmptyTips: {
+      type: String,
+      default: ''
+    },
+    selectionHideWhenNoKey: {
+      type: Boolean,
+      default: false
+    },
+    selectionNumOfPag: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       time: Math.random().toString(36).slice(2),
@@ -162,7 +277,7 @@ export default {
     },
     relShowSelectionBox() {
       if (!this.hasSelections || this.disabled || this.readonly) return false
-      if (this.selectionHideWhenNoKey && !this.value) {
+      if (!this.onlySelector && this.selectionHideWhenNoKey && !this.value) {
         return false
       }
       return this.isFocus
