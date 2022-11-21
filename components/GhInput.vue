@@ -391,6 +391,7 @@ export default {
       }
     },
     handleFocus() {
+      this.$emit('selectionInitData')
       if (!this.onlySelector) {
         this.isFocus = true
         this.$emit('focus')
