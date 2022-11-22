@@ -9,7 +9,7 @@
     ]"
     @click="toggleSelector"
   >
-    <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon" />
+    <img v-if="relPrefixIcon" class="prefixIcon" :src="relPrefixIcon">
     <input
       :ref="`input-${time}`"
       :placeholder="placeholder || ''"
@@ -24,7 +24,7 @@
       @blur="handleBlur"
       @input="handleInput"
       @keydown="handleEnter"
-    />
+    >
     <p v-if="showLength && maxLength" class="length">
       {{ value.length }}/{{ maxLength }}
     </p>
@@ -33,13 +33,13 @@
       class="copyButton rightButton"
       src="../assets/icon_copy.svg"
       @click="copyValue"
-    />
+    >
     <img
       v-if="watchPassword && type === 'password'"
       class="watchButton rightButton"
       :src="watchPasswordIcon"
       @click="togglePassword"
-    />
+    >
     <div v-if="showClear" class="clearButton" @click="clearValue">
       <span> × </span>
     </div>
@@ -53,7 +53,7 @@
         relShowSelectionBox ? 'selectorIcon--show' : 'selectorIcon--hide',
       ]"
       :src="require(`../assets/icon_down${disabled ? '_selected' : ''}.svg`)"
-    />
+    >
     <!-- selections @scroll="handleScroll" -->
     <div v-if="hasSelections" class="selectionBox">
       <div
@@ -67,7 +67,13 @@
           <div
             v-for="(item, index) in selectionData"
             :key="`selectionItem-${time}-${index}`"
-            :class="['selectionBox-inner-item', `selectionItem-${time}`]"
+            :class="[
+              'selectionBox-inner-item',
+              `selectionItem-${time}`,
+              item.disabled && value !== item[relSelectionTextKey]
+                ? 'selectionBox-inner-item--disabled'
+                : '',
+            ]"
             @click="handleSelect(index, item)"
           >
             <slot :slot-scope="item" name="selectionItem">
@@ -92,8 +98,8 @@
 <script>
 /**
  * GhInput参数解析
- * @param value[String|Number|Null] 输入框value
- * @param prefixIcon[String(ImageModule)] 左侧Icon，为require的图片资源
+ * @param value[String] 输入框value
+ * @param prefixIcon[ImageModule] 左侧Icon，为require的图片资源
  * @param hidePrefixIcon[Boolean] 是否隐藏前置(输入框左侧)Icon
  * @param placeholder[String] 输入框提示语(placeholder)
  * @param disabled[Boolean] 是否禁用输入框
@@ -111,7 +117,7 @@
  * @param hasSuffix[Boolean] 是否拥有后置(输入框右侧)内容
  * @param hasSelections[Boolean] 是否拥有可选项
  * @param onlySelector[Boolean] 是否仅启动选择功能（该属性为true时会禁用输入功能）
- * @param selectionData[Array({[TextKey||text]: String, ...}]) 选项数据
+ * @param selectionData[Array({[TextKey||text]: String, disabled: Boolean, disabledCallback: Function, ...}]) 选项数据
  * @param selectionTextKey[String] 选项数据中单项的所需展示的文案内容对应Key值
  * @param selectionLoading[Boolean] 选项数据是否正在加载
  * @param selectionError[Boolean] 选项数据是否发生加载错误
@@ -263,7 +269,7 @@ export default {
       return this.selectionLoadingTips || '检索中...'
     },
     relSelectionEmptyTips() {
-      return this.selectionErrorTips || '暂无符合条件的结果'
+      return this.selectionErrorTips || '暂无符合条件的选项'
     },
     relSelectionErrorTips() {
       return this.selectionErrorTips || '检索失败，请重试'
@@ -318,9 +324,7 @@ export default {
         ...commonStyle,
         height: `${relHeight}px`,
         overflowY:
-          this.relSelectionNumOfPage >= singleItems.length
-            ? 'hidden'
-            : 'auto'
+          this.relSelectionNumOfPage >= singleItems.length ? 'hidden' : 'auto'
       }
     },
 
@@ -352,14 +356,16 @@ export default {
       this.preShowSelections()
     },
     selectionData() {
-      if (this.selectionData.length > 0) {
-        const item = this.selectionData[0]
-        if (item[this.relSelectionTextKey] === this.value) {
-          this.$emit('input', item[this.relSelectionTextKey])
-          this.$emit('select', 0, item)
+      if (!this.onlySelector) {
+        if (this.selectionData.length > 0) {
+          const item = this.selectionData[0]
+          if (item[this.relSelectionTextKey] === this.value) {
+            this.$emit('input', item[this.relSelectionTextKey])
+            this.$emit('select', 0, item)
+          }
         }
+        this.preShowSelections()
       }
-      this.preShowSelections()
     },
     relSelectionTips() {
       this.preShowSelections()
@@ -467,6 +473,10 @@ export default {
       }
     },
     handleSelect(index, item) {
+      if (item.disabled && this.value !== item[this.relSelectionTextKey]) {
+        if (item.disabledCallback) item.disabledCallback()
+        return
+      }
       this.preCloseSelections()
       setTimeout(() => {
         if (this.onlySelector) this.isFocus = false
@@ -669,6 +679,16 @@ export default {
         box-shadow: 0 0 0 1px #fff;
         ::v-deep p {
           color: #fff;
+        }
+      }
+      &-item--disabled {
+        background-color: #f7f7f8 !important;
+      }
+      .selectionBox-inner-item--disabled:hover {
+        background: #f7f7f8;
+        box-shadow: 0 0 0 1px #fff;
+        ::v-deep p {
+          color: #000;
         }
       }
     }
