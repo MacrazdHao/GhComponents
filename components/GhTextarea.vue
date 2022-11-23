@@ -8,7 +8,7 @@
         </span>
       </p>
     </div>
-    <div :class="['textareaBox', focus ? 'textareaBox--focus' : '']">
+    <div :class="['textareaBox', focus ? 'textareaBox--focus' : '', disabled ? 'textareaBox--disabled' : '']">
       <p v-if="innerLabel">{{ innerLabel }}</p>
       <textarea
         :value="value"
@@ -164,13 +164,20 @@ export default {
     }
     textarea:disabled {
       font-size: 14px;
-      color: #333333;
+      color: #b7b7b7 !important;
       line-height: 20px;
+      cursor: not-allowed;
     }
   }
   .textareaBox--focus {
     border: 1px solid #5c87ff;
     box-shadow: 0 0 0 1px #5c88ff50;
+  }
+  .textareaBox--disabled {
+    border: 1px solid #d3d3d3;
+    background-color: #f6f6f6;
+    box-shadow: none;
+    cursor: not-allowed;
   }
 }
 </style>
