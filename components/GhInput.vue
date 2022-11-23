@@ -98,8 +98,8 @@
 <script>
 /**
  * GhInput参数解析
- * @param value[String] 输入框value
- * @param prefixIcon[ImageModule] 左侧Icon，为require的图片资源
+ * @param value[String|Number|Null] 输入框value
+ * @param prefixIcon[String(ImageModule)] 左侧Icon，为require的图片资源
  * @param hidePrefixIcon[Boolean] 是否隐藏前置(输入框左侧)Icon
  * @param placeholder[String] 输入框提示语(placeholder)
  * @param disabled[Boolean] 是否禁用输入框
@@ -397,7 +397,7 @@ export default {
       }
     },
     handleFocus() {
-      this.$emit('selectionInitData')
+      if (this.selectionData.length === 0) this.$emit('selectionInitData')
       if (!this.onlySelector) {
         this.isFocus = true
         this.$emit('focus')
@@ -459,8 +459,8 @@ export default {
       })
     },
     preCloseSelections() {
-      this.animToggle = true
-      this.relSelectionBoxStyle = this.selectionBoxStyle
+      // this.animToggle = true
+      // this.relSelectionBoxStyle = this.selectionBoxStyle
       setTimeout(() => {
         this.animToggle = false
       }, 200)
@@ -473,13 +473,13 @@ export default {
       }
     },
     handleSelect(index, item) {
-      if (item.disabled && this.value !== item[this.relSelectionTextKey]) {
-        if (item.disabledCallback) item.disabledCallback()
-        return
-      }
       this.preCloseSelections()
       setTimeout(() => {
         if (this.onlySelector) this.isFocus = false
+        if (item.disabled && this.value !== item[this.relSelectionTextKey]) {
+          if (item.disabledCallback) item.disabledCallback()
+          return
+        }
         this.$emit('input', item[this.relSelectionTextKey])
         this.$emit('select', index, item)
       }, 200)
