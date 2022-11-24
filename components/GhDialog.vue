@@ -31,9 +31,7 @@
           :class="['grayManagement-iconfont', 'dialog-content-icon', iconClass]"
         />
         <slot name="content">
-          <pre class="dialog-content">
-            {{ content }}
-          </pre>
+          <pre class="dialog-content">{{ content }}</pre>
         </slot>
       </p>
       <div
@@ -49,7 +47,11 @@
         </div>
         <div
           v-if="showConfirm"
-          class="dialog-buttons-item dialog-buttons-confirm"
+          :class="[
+            'dialog-buttons-item',
+            'dialog-buttons-confirm',
+            disabledConfirm ? 'dialog-buttons-confirm--disabled' : '',
+          ]"
           @click="confirmHandler"
         >
           {{ relConfirmText }}
@@ -72,13 +74,13 @@
  * @param confirmText[String] 确认按钮文案
  * @param showCancel[Boolean] 是否显示取消按钮
  * @param showConfirm[Boolean] 是否显示确认按钮
+ * @param disabledConfirm[Boolean] 是否禁用确认按钮
+ * @param dontHideWhenConfirm[Boolean] 确认按钮是否不触发窗口关闭行为
  * @param showClose[Boolean] 是否显示关闭Icon按钮
  * @param showShade[Boolean] 是否显示阴影遮罩
  * @param enableShadeClose[Boolean] 是否展示阴影遮罩点击关闭效果
  * @param popover[Boolean] 是否为纯文字提示窗
  * @param popDuration[Number] 纯文字提示窗展示时间
- * @param groupName[String] 同组只展示限制的弹窗个数，与groupMax共用，如果为空则不限制
- * @param groupMax[Number] 同组展示的弹窗个数上限
  * @param hide[Function] 窗体关闭回调函数
  * @param confirm[Function] 确认按钮回调函数
  * @param cancel[Function] 取消按钮回调函数
@@ -124,6 +126,14 @@ export default {
     showConfirm: {
       type: Boolean,
       default: true
+    },
+    disabledConfirm: {
+      type: Boolean,
+      default: false
+    },
+    dontHideWhenConfirm: {
+      type: Boolean,
+      default: false
     },
     showClose: {
       type: Boolean,
@@ -252,8 +262,9 @@ export default {
       }, 300)
     },
     confirmHandler() {
+      if (this.disabledConfirm) return
       this.$emit('confirm')
-      this.closeWindow()
+      if (!this.dontHideWhenConfirm) this.closeWindow()
     },
     cancelHandler() {
       this.$emit('cancel')
@@ -328,6 +339,7 @@ export default {
       line-height: 22px;
       color: #121314;
       overflow: auto;
+      margin-top: 4px;
       &-icon {
         font-size: 20px;
         margin-right: 6px;
@@ -374,6 +386,10 @@ export default {
         border-color: #3760ea;
         border-style: solid;
         color: #fff;
+      }
+      &-confirm--disabled {
+        background-color: #b9d0fd !important;
+        border-color: #b9d0fd !important;
       }
       .dialog-buttons-confirm:hover {
         background-color: #5c87ff;
