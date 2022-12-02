@@ -1,8 +1,10 @@
 <template>
   <div
+    :ref="GhInputId"
     v-clickoutside="closeSelector"
     :class="[
       'GhInput',
+      readOnly ? 'GhInput--readonly' : '',
       disabled ? 'GhInput--disabled' : '',
       isFocus && !disabled ? 'GhInput--focus' : '',
       onlySelector ? 'GhInput--selector' : '',
@@ -55,7 +57,7 @@
       :src="require(`../assets/icon_down${disabled ? '_selected' : ''}.svg`)"
     >
     <!-- selections @scroll="handleScroll" -->
-    <div v-if="hasSelections" class="selectionBox">
+    <div v-if="hasSelections" ref="selectionBox" class="selectionBox">
       <div
         v-show="relShowSelectionBox || animToggle"
         :ref="`selectionBox-${time}`"
@@ -73,6 +75,7 @@
               item.disabled && value !== item[relSelectionTextKey]
                 ? 'selectionBox-inner-item--disabled'
                 : '',
+              selectionItemBorder ? 'selectionBox-inner-item--border' : '',
             ]"
             @click="handleSelect(index, item)"
           >
@@ -116,6 +119,8 @@
  * @param showClear[Boolean] 是否显示清空内容按钮
  * @param hasSuffix[Boolean] 是否拥有后置(输入框右侧)内容
  * @param hasSelections[Boolean] 是否拥有可选项
+ * @param selectionBoxMaxWidth[String] 选项下拉框的最大宽度
+ * @param selectionItemBorder[Boolean] 每个选项是否需要分割线
  * @param onlySelector[Boolean] 是否仅启动选择功能（该属性为true时会禁用输入功能）
  * @param selectionData[Array({[TextKey||text]: String, disabled: Boolean, disabledCallback: Function, ...}]) 选项数据
  * @param selectionTextKey[String] 选项数据中单项的所需展示的文案内容对应Key值
@@ -205,6 +210,14 @@ export default {
       type: Boolean,
       default: false
     },
+    selectionBoxMaxWidth: {
+      type: String,
+      default: ''
+    },
+    selectionItemBorder: {
+      type: Boolean,
+      default: false
+    },
     onlySelector: {
       type: Boolean,
       default: false
@@ -241,7 +254,7 @@ export default {
       type: Boolean,
       default: false
     },
-    selectionNumOfPag: {
+    selectionNumOfPage: {
       type: Number,
       default: 0
     }
@@ -261,6 +274,12 @@ export default {
     }
   },
   computed: {
+    GhInputId() {
+      return `GhInput--${this.time}`
+    },
+    readOnly() {
+      return this.readonly
+    },
     // 自动建议选择框中，单项的文字key值：
     relSelectionTextKey() {
       return this.selectionTextKey || 'text'
@@ -291,6 +310,18 @@ export default {
     relSelectionNumOfPage() {
       return this.selectionNumOfPage || 5
     },
+    // relHeight() {
+    //   const singleItems = document.getElementsByClassName(
+    //     `selectionItem-${this.time}`
+    //   )
+    //   console.log(this.singleItems)
+    //   const itemNum = Math.min(this.relSelectionNumOfPage, singleItems.length)
+    //   let relHeight = 8
+    //   for (let i = 0; i < itemNum; i++) {
+    //     relHeight += singleItems[i].offsetHeight
+    //   }
+    //   return relHeight
+    // },
     selectionBoxStyle() {
       if (!this.hasSelections || !this.relShowSelectionBox) {
         return {
@@ -311,18 +342,13 @@ export default {
           overflowY: 'hidden'
         }
       }
+      // if (this.relSelectionTips) relHeight += 42
       const singleItems = document.getElementsByClassName(
         `selectionItem-${this.time}`
       )
-      const itemNum = Math.min(this.relSelectionNumOfPage, singleItems.length)
-      let relHeight = 8
-      for (let i = 0; i < itemNum; i++) {
-        relHeight += singleItems[i].offsetHeight
-      }
-      // if (this.relSelectionTips) relHeight += 42
       return {
         ...commonStyle,
-        height: `${relHeight}px`,
+        height: `${this.relHeight()}px`,
         overflowY:
           this.relSelectionNumOfPage >= singleItems.length ? 'hidden' : 'auto'
       }
@@ -374,12 +400,29 @@ export default {
       // this.$emit('selectionInitData')
     }
   },
+  beforeDestroy() {
+    if (this.hasSelections && this.$refs.selectionBox) {
+      document.body.removeChild(this.$refs.selectionBox)
+    }
+  },
   mounted() {
     if (this.hasSelections) {
       this.$emit('selectionInitData')
+      this.setSelectionBoxPosition()
     }
   },
   methods: {
+    relHeight() {
+      const singleItems = document.getElementsByClassName(
+        `selectionItem-${this.time}`
+      )
+      const itemNum = Math.min(this.relSelectionNumOfPage, singleItems.length)
+      let relHeight = 8
+      for (let i = 0; i < itemNum; i++) {
+        relHeight += singleItems[i].offsetHeight
+      }
+      return relHeight
+    },
     toggleSelector() {
       if (this.isFocus) this.closeSelector()
       else if (!this.isFocus) this.showSelector()
@@ -452,9 +495,35 @@ export default {
       this.$emit('input', '')
       this.$emit('clear')
     },
+    setSelectionBoxPosition() {
+      if (!this.$refs[this.GhInputId]) return
+      const pos = this.$refs[this.GhInputId].getBoundingClientRect()
+      const y = pos.y + pos.height
+      const x = pos.x
+      // const relHeight = this.relHeight()
+      // console.log(y + relHeight, document.body.offsetHeight)
+      // if (y + relHeight > document.body.offsetHeight) {
+      //   this.$refs.selectionBox.style.top = 0 + 'px'
+      //   this.$refs.selectionBox.style.bottom = pos.y + pos.height + 'px'
+      // } else {
+      //   this.$refs.selectionBox.style.bottom = 0 + 'px'
+      this.$refs.selectionBox.style.top = y + 'px'
+      // }
+      this.$refs.selectionBox.style.left = x + 'px'
+      this.$refs.selectionBox.style.minWidth = pos.width + 'px'
+      this.$refs.selectionBox.style.maxWidth =
+        this.selectionBoxMaxWidth || (pos.width + 'px')
+      if (
+        this.$refs.selectionBox.parentNode.tagName !== 'BODY' &&
+        this.$refs.selectionBox.parentNode.tagName !== 'body'
+      ) {
+        document.body.appendChild(this.$refs.selectionBox)
+      }
+    },
     preShowSelections() {
-      this.animToggle = true
       setTimeout(() => {
+        this.setSelectionBoxPosition()
+        this.animToggle = true
         this.relSelectionBoxStyle = this.selectionBoxStyle
       })
     },
@@ -463,6 +532,10 @@ export default {
       // this.relSelectionBoxStyle = this.selectionBoxStyle
       setTimeout(() => {
         this.animToggle = false
+        // this.$refs.selectionBox.style.bottom = 0 + 'px'
+        // this.$refs.selectionBox.style.top = 0 + 'px'
+        // this.$refs.selectionBox.style.left = 0 + 'px'
+        // this.$refs.selectionBox.style.minWidth = 0 + 'px'
       }, 200)
     },
     handleScroll(e) {
@@ -489,6 +562,77 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.selectionBox {
+  position: fixed;
+  // bottom: 0;
+  // left: 0;
+  // transform: translate(0%, 100%);
+  z-index: 10000;
+  width: fit-content;
+  height: fit-content;
+  padding-top: 6px;
+  &-inner {
+    width: 100%;
+    overflow-x: hidden;
+    background-color: #fff;
+    background: #fff;
+    box-shadow: 0px 4px 8px 0px #e0e0e0;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    border-radius: 4px;
+    transition: all 0.2s;
+    &-tips {
+      font-size: 14px;
+      color: #d3d3d3;
+      // line-height: 34px;
+      letter-spacing: normal;
+      text-align: center;
+    }
+    .selectionBox-inner-item--border + .selectionBox-inner-item--border {
+      border-top: 1px solid #ddd;
+    }
+    &-item {
+      width: 100%;
+      min-height: 32px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      ::v-deep p {
+        width: 100%;
+        font-size: 14px;
+        line-height: 20px;
+        height: 20px;
+        transition: all 0.2s;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    .selectionBox-inner-item:hover {
+      background: #5c87ff;
+      box-shadow: 0 0 0 1px #fff;
+      ::v-deep p {
+        color: #fff;
+      }
+    }
+    &-item--disabled {
+      background-color: #f7f7f8 !important;
+    }
+    .selectionBox-inner-item--disabled:hover {
+      background: #f7f7f8;
+      box-shadow: 0 0 0 1px #fff;
+      ::v-deep p {
+        color: #000;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="scss" scoped>
 .GhInput--selector {
   cursor: pointer;
   input {
@@ -512,6 +656,25 @@ export default {
   box-shadow: 0 0 0 1px #5c88ff50 !important;
   .suffix {
     border-left: 1px solid #5c87ff !important;
+  }
+}
+.GhInput--readonly {
+  // background-color: #f5f5f5 !important;
+  // cursor: not-allowed !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 5px 0 !important;
+  cursor: text !important;
+  input {
+    // color: #b7b7b7 !important;
+    // cursor: not-allowed;
+    cursor: text !important;
+  }
+  .length {
+    color: #b7b7b7 !important;
+  }
+  .selectorIcon {
+    opacity: 0 !important;
   }
 }
 .GhInput {
@@ -628,70 +791,6 @@ export default {
   }
   .selectorIcon--hide {
     transform: rotate(360deg);
-  }
-  .selectionBox {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    transform: translate(0%, 100%);
-    z-index: 10;
-    width: 100%;
-    padding-top: 6px;
-    &-inner {
-      width: 100%;
-      overflow-x: hidden;
-      background-color: #fff;
-      background: #fff;
-      box-shadow: 0px 4px 8px 0px #e0e0e0;
-      transition: all 0.2s;
-      box-sizing: border-box;
-      border-radius: 4px;
-      transition: all 0.2s;
-      &-tips {
-        font-size: 14px;
-        color: #d3d3d3;
-        // line-height: 34px;
-        letter-spacing: normal;
-        text-align: center;
-      }
-      &-item {
-        width: 100%;
-        min-height: 32px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 6px 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        ::v-deep p {
-          width: 100%;
-          font-size: 14px;
-          line-height: 20px;
-          height: 20px;
-          transition: all 0.2s;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-      .selectionBox-inner-item:hover {
-        background: #5c87ff;
-        box-shadow: 0 0 0 1px #fff;
-        ::v-deep p {
-          color: #fff;
-        }
-      }
-      &-item--disabled {
-        background-color: #f7f7f8 !important;
-      }
-      .selectionBox-inner-item--disabled:hover {
-        background: #f7f7f8;
-        box-shadow: 0 0 0 1px #fff;
-        ::v-deep p {
-          color: #000;
-        }
-      }
-    }
   }
 }
 </style>
