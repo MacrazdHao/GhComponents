@@ -570,7 +570,7 @@ export default {
   z-index: 10000;
   width: fit-content;
   height: fit-content;
-  padding-top: 6px;
+  margin-top: 6px;
   &-inner {
     width: 100%;
     overflow-x: hidden;
