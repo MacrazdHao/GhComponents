@@ -421,8 +421,8 @@ export default {
     scrollFollow() {
       setTimeout(() => {
         if (this.relShowSelectionBox) {
-          this.$emit('selectionInitData')
           this.setSelectionBoxPosition()
+          this.relSelectionBoxStyle = this.selectionBoxStyle
         }
       })
     },
