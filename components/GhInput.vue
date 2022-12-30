@@ -401,17 +401,31 @@ export default {
     }
   },
   beforeDestroy() {
-    if (this.hasSelections && this.$refs.selectionBox) {
-      document.body.removeChild(this.$refs.selectionBox)
+    if (this.hasSelections) {
+      window.removeEventListener('scroll', this.scrollFollow, true)
+      if (this.$refs.selectionBox) {
+        document.body.removeChild(this.$refs.selectionBox)
+      }
     }
   },
   mounted() {
+    if (this.hasSelections) {
+      window.addEventListener('scroll', this.scrollFollow, true)
+    }
     if (this.hasSelections) {
       this.$emit('selectionInitData')
       this.setSelectionBoxPosition()
     }
   },
   methods: {
+    scrollFollow() {
+      setTimeout(() => {
+        if (this.relShowSelectionBox) {
+          this.$emit('selectionInitData')
+          this.setSelectionBoxPosition()
+        }
+      })
+    },
     relHeight() {
       const singleItems = document.getElementsByClassName(
         `selectionItem-${this.time}`
