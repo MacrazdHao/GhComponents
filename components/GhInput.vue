@@ -131,6 +131,7 @@
  * @param selectionEmptyTips[String] 选项数据为空提示语
  * @param selectionHideWhenNoKey[Boolean] 是否在value为空时隐藏选择框(onlySelector=true时不生效)
  * @param selectionNumOfPage[Number] 选项数据列表的第一页展示选项数
+ * @function input(text, fromSelect) 输入回调
  */
 import Clickoutside from './utilsFromElement/clickoutside'
 export default {
@@ -270,7 +271,8 @@ export default {
         height: 0,
         opacity: 0,
         padding: 0
-      }
+      },
+      selectedItem: false
     }
   },
   computed: {
@@ -386,8 +388,11 @@ export default {
         if (this.selectionData.length > 0) {
           const item = this.selectionData[0]
           if (item[this.relSelectionTextKey] === this.value) {
-            this.$emit('input', item[this.relSelectionTextKey])
-            this.$emit('select', 0, item)
+            if (!this.selectedItem) {
+              this.$emit('input', item[this.relSelectionTextKey], true)
+              this.$emit('select', 0, item)
+            }
+            this.selectedItem = true
           }
         }
         this.preShowSelections()
@@ -468,7 +473,8 @@ export default {
       }, 100)
     },
     handleInput(e) {
-      this.$emit('input', e.target.value)
+      this.selectedItem = false
+      this.$emit('input', e.target.value, false)
       if (this.hasSelections) this.$emit('selectionInitData')
     },
     handleEnter(e) {
@@ -506,7 +512,8 @@ export default {
       this.showingPassword = !this.showingPassword
     },
     clearValue() {
-      this.$emit('input', '')
+      this.selectedItem = false
+      this.$emit('input', '', false)
       this.$emit('clear')
     },
     setSelectionBoxPosition() {
@@ -526,7 +533,7 @@ export default {
       this.$refs.selectionBox.style.left = x + 'px'
       this.$refs.selectionBox.style.minWidth = pos.width + 'px'
       this.$refs.selectionBox.style.maxWidth =
-        this.selectionBoxMaxWidth || (pos.width + 'px')
+        this.selectionBoxMaxWidth || pos.width + 'px'
       if (
         this.$refs.selectionBox.parentNode.tagName !== 'BODY' &&
         this.$refs.selectionBox.parentNode.tagName !== 'body'
@@ -567,7 +574,8 @@ export default {
           if (item.disabledCallback) item.disabledCallback()
           return
         }
-        this.$emit('input', item[this.relSelectionTextKey])
+        this.selectedItem = true
+        this.$emit('input', item[this.relSelectionTextKey], true)
         this.$emit('select', index, item)
       }, 200)
     }
