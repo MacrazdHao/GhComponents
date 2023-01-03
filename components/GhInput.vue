@@ -80,7 +80,7 @@
             @click="handleSelect(index, item)"
           >
             <slot :slot-scope="item" name="selectionItem">
-              <p class="selectionBox-inner-item-text">
+              <p class="selectionBox-inner-item-text" :title="item[relSelectionTextKey]">
                 {{ item[relSelectionTextKey] }}
               </p>
             </slot>
