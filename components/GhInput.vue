@@ -134,7 +134,7 @@
  * @param selectionEmptyTips[String] 选项数据为空提示语
  * @param selectionHideWhenNoKey[Boolean] 是否在value为空时隐藏选择框(onlySelector=true时不生效)
  * @param selectionNumOfPage[Number] 选项数据列表的第一页展示选项数
- * @function input(text, fromSelect) 输入回调函数，参数：[text-输入的内容][，fromSelect-内容变更是否来自选择选项]
+ * @function input(text, fromSelect) 输入回调函数，参数：[text-输入的内容][fromSelect-内容变更是否来自选择选项]
  * @function focus() 聚焦回调函数，onlySelector模式下不执行
  * @function blur() 失焦回调函数
  * @function clear() 清空内容按钮回调函数
