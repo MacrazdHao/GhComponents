@@ -80,7 +80,10 @@
             @click="handleSelect(index, item)"
           >
             <slot :slot-scope="item" name="selectionItem">
-              <p class="selectionBox-inner-item-text" :title="item[relSelectionTextKey]">
+              <p
+                class="selectionBox-inner-item-text"
+                :title="item[relSelectionTextKey]"
+              >
                 {{ item[relSelectionTextKey] }}
               </p>
             </slot>
@@ -279,7 +282,8 @@ export default {
         opacity: 0,
         padding: 0
       },
-      selectedItem: false
+      selectedItem: false,
+      transformOrigin: 'center bottom'
     }
   },
   computed: {
@@ -334,15 +338,20 @@ export default {
     selectionBoxStyle() {
       if (!this.hasSelections || !this.relShowSelectionBox) {
         return {
-          height: 0,
+          // height: 0,
+          height: `${this.relHeight()}px`,
           opacity: 0,
-          overflowY: 'hidden'
+          transform: 'scaleY(0)',
+          overflowY: 'hidden',
+          transformOrigin: this.transformOrigin
         }
       }
       const commonStyle = {
         opacity: 1,
+        transform: 'scaleY(1)',
         padding: '4px 0',
-        overflowY: 'hidden'
+        overflowY: 'hidden',
+        transformOrigin: this.transformOrigin
       }
       if (this.selectionData.length === 0 && this.relSelectionTips) {
         return {
@@ -427,6 +436,7 @@ export default {
     if (this.hasSelections) {
       this.$emit('selectionInitData')
       this.setSelectionBoxPosition()
+      this.relSelectionBoxStyle = this.selectionBoxStyle
     }
   },
   methods: {
@@ -528,15 +538,20 @@ export default {
       const pos = this.$refs[this.GhInputId].getBoundingClientRect()
       const y = pos.y + pos.height
       const x = pos.x
-      // const relHeight = this.relHeight()
-      // console.log(y + relHeight, document.body.offsetHeight)
-      // if (y + relHeight > document.body.offsetHeight) {
-      //   this.$refs.selectionBox.style.top = 0 + 'px'
-      //   this.$refs.selectionBox.style.bottom = pos.y + pos.height + 'px'
-      // } else {
-      //   this.$refs.selectionBox.style.bottom = 0 + 'px'
-      this.$refs.selectionBox.style.top = y + 'px'
-      // }
+      const selectionBoxHeight = this.relHeight()
+      this.$refs.selectionBox.style.height = this.relShowSelectionBox ? 'fit-content' : 0
+      if (
+        selectionBoxHeight -
+          (document.body.getBoundingClientRect().height - y) >
+        8
+      ) {
+        this.$refs.selectionBox.style.top =
+          y - pos.height - selectionBoxHeight - 10 + 'px'
+        this.transformOrigin = 'center bottom'
+      } else {
+        this.$refs.selectionBox.style.top = y + 'px'
+        this.transformOrigin = 'center top'
+      }
       this.$refs.selectionBox.style.left = x + 'px'
       this.$refs.selectionBox.style.minWidth = pos.width + 'px'
       this.$refs.selectionBox.style.maxWidth =
@@ -606,10 +621,11 @@ export default {
     background-color: #fff;
     background: #fff;
     box-shadow: 0px 4px 8px 0px #e0e0e0;
-    transition: all 0.2s;
+    // transition: all 0.2s;
     box-sizing: border-box;
     border-radius: 4px;
-    transition: all 0.2s;
+    transition: transform 0.2s, opacity 0.2s;
+    // transform: scaleY(0);
     &-tips {
       font-size: 14px;
       color: #d3d3d3;
