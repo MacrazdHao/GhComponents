@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import GhInput from './components/GhInput.vue'
+import GhInput from '../../../components/GhInput.vue'
 export default {
   components: {
     GhInput
   },
-  props: ['placeholder', 'optionsData'],
+  props: ['placeholder', 'optionsData', 'keywordToValue'],
   data() {
     return {
       keyword: '',
@@ -51,7 +51,8 @@ export default {
     handleInput(text, fromSelect = false) {
       if (!fromSelect) this.selectedOptionIndex = -1
       this.keyword = text
-      this.$emit('select', '')
+      if (!this.keywordToValue) this.$emit('select', '')
+      else this.$emit('select', text)
     }
   }
 }
