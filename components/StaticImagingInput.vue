@@ -2,6 +2,7 @@
 <template>
   <GhInput
     class="StaticImagingInput"
+    :disabled="disabled"
     :placeholder="placeholder"
     :value="keyword"
     :has-selections="true"
@@ -18,7 +19,8 @@ export default {
   components: {
     GhInput
   },
-  props: ['placeholder', 'optionsData', 'keywordToValue'],
+  // value必填，否则v-for该输入框时，当数组发生改变，输入框的内容会出现错误或错乱
+  props: ['value', 'placeholder', 'optionsData', 'keywordToValue', 'disabled'],
   data() {
     return {
       keyword: '',
@@ -41,6 +43,14 @@ export default {
         return false
       })
     }
+  },
+  watch: {
+    value() {
+      this.keyword = this.value
+    }
+  },
+  mounted() {
+    this.keyword = this.value
   },
   methods: {
     selectOption(index, item) {
