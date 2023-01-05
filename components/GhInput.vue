@@ -624,7 +624,7 @@ export default {
     // transition: all 0.2s;
     box-sizing: border-box;
     border-radius: 4px;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s, opacity 0.1s;
     // transform: scaleY(0);
     &-tips {
       font-size: 14px;
