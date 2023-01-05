@@ -31,7 +31,7 @@
           :class="['grayManagement-iconfont', 'dialog-content-icon', iconClass]"
         />
         <slot name="content">
-          <pre class="dialog-content">{{ content }}</pre>
+          <pre class="dialog-content-text">{{ content }}</pre>
         </slot>
       </p>
       <div
