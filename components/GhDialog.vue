@@ -304,6 +304,7 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -53%) scale(1.03);
+    transform-origin: 50% 50%;
     z-index: 9999;
     transition: 0.25s opacity ease-in-out, 0.2s transform ease-in-out;
     opacity: 0;
