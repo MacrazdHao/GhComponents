@@ -240,7 +240,8 @@ export default {
       })
       setTimeout(() => {
         dWindow.style.opacity = 1
-        dWindow.style.transform = 'translate(-50%, -50%)'
+        // dWindow.style.transform = 'translate(-50%, -50%)'
+        dWindow.style.transform = 'translate(-50%, -50%) scale(1)'
         if (this.popover) {
           setTimeout(this.cancelHandler, this.popDuration)
         }
@@ -250,7 +251,8 @@ export default {
       const dShade = this.$refs[`${this.refPrefix}-shade-${this.refSuffix}`]
       const dWindow = this.$refs[`${this.refPrefix}-window-${this.refSuffix}`]
       dWindow.style.opacity = 0
-      dWindow.style.transform = 'translate(-50%, -70%)'
+      // dWindow.style.transform = 'translate(-50%, -70%)'
+      dWindow.style.transform = 'translate(-50%, -53%) scale(1.03)'
       setTimeout(() => {
         dShade.style.opacity = 0
         setTimeout(() => {
@@ -301,9 +303,9 @@ export default {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -53%) scale(1.03);
     z-index: 9999;
-    transition: 0.3s all ease;
+    transition: 0.25s opacity ease-in-out, 0.2s transform ease-in-out;
     opacity: 0;
     max-width: calc(100% - 200px);
     width: fit-content;
